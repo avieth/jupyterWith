@@ -1,12 +1,11 @@
-_: pkgs:
+# Specify the IHaskell repository location, and get a function suitable
+# for use as an overlay to nixpkgs. The parameter should be a function
+# from the nixpkgs to a source location; you can use the argument to
+# fetchFromGitHub or similar.
+{ ihaskellSrc }: _: pkgs:
 
 let
-  ihaskellSrc = pkgs.fetchFromGitHub {
-    owner = "gibiansky";
-    repo = "IHaskell";
-    rev = "c070adf8828dad378bb0048483c16f2640a339b5";
-    sha256 = "1v8hvr75lg3353qgm18k43b3wl040zkbhkklw6ygv5w8zzb3x826";
-  };
+  ihaskell = ihaskellSrc pkgs;
 
   overrides = self: hspkgs:
     let
@@ -19,13 +18,9 @@ let
     in
     {
       # -- ihaskell overrides
-      # the current version of hlint in nixpkgs uses a different
-      # version of haskell-src-exts, which creates incompatibilities
-      # when building ihaskell
-      hlint = hspkgs.callHackage "hlint" "2.1.11" {};
       zeromq4-haskell = dontCheck hspkgs.zeromq4-haskell;
       ihaskell = pkgs.haskell.lib.overrideCabal
-        (hspkgs.callCabal2nix "ihaskell" ihaskellSrc {})
+        (hspkgs.callCabal2nix "ihaskell" ihaskell {})
         (_drv: {
           preCheck = ''
             export HOME=$(${pkgs.pkgs.coreutils}/bin/mktemp -d)
@@ -38,8 +33,8 @@ let
           ];
           doHaddock = false;
          });
-      ghc-parser = hspkgs.callCabal2nix "ghc-parser" "${ihaskellSrc}/ghc-parser" {};
-      ipython-kernel = hspkgs.callCabal2nix "ipython-kernel" "${ihaskellSrc}/ipython-kernel" {};
+      ghc-parser = hspkgs.callCabal2nix "ghc-parser" "${ihaskell}/ghc-parser" {};
+      ipython-kernel = hspkgs.callCabal2nix "ipython-kernel" "${ihaskell}/ipython-kernel" {};
       ihaskell-aeson = callDisplayPackage "aeson";
       ihaskell-blaze = callDisplayPackage "blaze";
       ihaskell-charts = callDisplayPackage "charts";
