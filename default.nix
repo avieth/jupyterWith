@@ -1,10 +1,13 @@
-{ overlays ? []
-, pkgs ? import ./nix { inherit overlays; }
+{ nixpkgs
+, ihaskell
+, overlays ? []
 }:
 
-with (import ./lib/directory.nix { inherit pkgs; });
-with (import ./lib/docker.nix { inherit pkgs; });
-
+let
+  pkgs = import ./nix { inherit nixpkgs; inherit overlays; inherit ihaskell; };
+in
+  with (import ./lib/directory.nix { inherit pkgs; });
+  with (import ./lib/docker.nix { inherit pkgs; });
 let
   # Kernel generators.
   kernels = pkgs.callPackage ./kernels {};
@@ -54,4 +57,4 @@ let
         passthru = oldAttrs.passthru or {} // { inherit env; };
       });
 in
-  { inherit jupyterlabWith kernels mkDirectoryWith mkDockerImage; }
+  { inherit pkgs jupyterlabWith kernels mkDirectoryWith mkDockerImage; }

@@ -1,10 +1,10 @@
-{ config ? {}, overlays ? [], nixpkgsSrc ? ./nixpkgs.nix, ihaskellSrc }:
+{ config ? {}, overlays ? [], nixpkgs ? import ./nixpkgs.nix, ihaskell }:
 
 let
   defaultOverlays = [
-    (import ./haskell-overlay.nix { inherit ihaskellSrc; })
+    (import ./haskell-overlay.nix { inherit ihaskell; })
     (import ./python-overlay.nix)
   ];
   overlaysAll = defaultOverlays ++ overlays;
 in
-  import nixpkgsSrc { inherit config; overlays=overlaysAll; }
+  nixpkgs { inherit config; overlays=overlaysAll; }

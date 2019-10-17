@@ -1,18 +1,14 @@
-# Specify the IHaskell repository location, and get a function suitable
-# for use as an overlay to nixpkgs. The parameter should be a function
-# from the nixpkgs to a source location; you can use the argument to
-# fetchFromGitHub or similar.
-{ ihaskellSrc }: _: pkgs:
+# The ihaskell directory is the parameter to this overlay function.
+{ ihaskell }: _: pkgs:
 
 let
-  ihaskell = ihaskellSrc pkgs;
 
   overrides = self: hspkgs:
     let
       callDisplayPackage = name:
         hspkgs.callCabal2nix
           "ihaskell-${name}"
-          "${ihaskellSrc}/ihaskell-display/ihaskell-${name}"
+          "${ihaskell}/ihaskell-display/ihaskell-${name}"
           {};
       dontCheck = pkgs.haskell.lib.dontCheck;
     in
