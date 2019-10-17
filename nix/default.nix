@@ -1,4 +1,4 @@
-{ config ? {}, overlays ? [] }:
+{ config ? {}, overlays ? [], nixpkgsSrc ? ./nixpkgs.nix }:
 
 let
   defaultOverlays = [
@@ -7,4 +7,4 @@ let
   ];
   overlaysAll = defaultOverlays ++ overlays;
 in
-  import ./nixpkgs.nix { inherit config; overlays=overlaysAll; }
+  import nixpkgsSrc { inherit config; overlays=overlaysAll; }
