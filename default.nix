@@ -21,7 +21,7 @@ let
   defaultKernels = [ (kernels.iPythonWith {}) ];
 
   # JupyterLab with the appropriate kernel and directory setup.
-  jupyterlabWith = { directory ? defaultDirectory, kernels ? defaultKernels }:
+  jupyterlabWith = { directory ? defaultDirectory, kernels ? defaultKernels, extrapkgs ? (_:[]) }:
     let
       # PYTHONPATH setup for JupyterLab
       pythonPath = python3.makePythonPath [
@@ -46,7 +46,7 @@ let
       env = pkgs.mkShell {
         name = "jupyterlab-shell";
         buildInputs =
-          [ jupyterlab generateDirectory pkgs.nodejs ] ++ (map (k: k.runtimePackages) kernels);
+          [ jupyterlab generateDirectory pkgs.nodejs ] ++ (map (k: k.runtimePackages) kernels) ++ extrapkgs pkgs;
         shellHook = ''
           export JUPYTER_PATH=${kernelsString kernels}
           export JUPYTERLAB=${jupyterlab}
