@@ -1,10 +1,8 @@
 { nixpkgs
-, ihaskell
-, overlays ? []
 }:
 
 let
-  pkgs = import ./nix { inherit nixpkgs; inherit overlays; inherit ihaskell; };
+  pkgs = nixpkgs;
 in
   with (import ./lib/directory.nix { inherit pkgs; });
   with (import ./lib/docker.nix { inherit pkgs; });
